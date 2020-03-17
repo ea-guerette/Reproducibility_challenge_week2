@@ -13,11 +13,9 @@ bom_data_sep <- separate(bom_data, Temp_min_max, into = c("min_temp", "max_temp"
 
 bom_meta <- read_csv("data/Bom_stations.csv")
 #this is wide, would be better as a long data set 
-bom_meta_long <- gather(bom_meta, key = "Station_number", value = "amount", -info)
-meta <- spread(bom_meta_long, key = "info", value = "amount")
+meta <- gather(bom_meta, key = "Station_number", value = "amount", -info) %>% spread(key = "info", value = "amount")
 
 #bom_data_sep and meta are the 'tidy' versions 
-
 
 
 #Q1 
@@ -71,8 +69,9 @@ ans_Q3 <- group_by(joined_data, state) %>%
 #arrange #BUT IDEALLY I WOULD LIKE TO EXTRACT ONLY THE ANSWER
 tib_Q4 <- group_by(joined_data, lon) %>% 
   summarise(mean_solar_exp = mean(as.numeric(Solar_exposure), na.rm = T))  %>% 
-  arrange(lon)
+  arrange(lon) %>% 
+  slice(-2:-(n()-1))
 
-ansQ4 <-filter(tib_Q4,lon == min(as.numeric(lon)))  <  filter(tib_Q4, lon == max(as.numeric(lon))) 
-#messy - but the westmost station gets less solar exposure
+ansQ4 <-filter(tib_Q4, mean_solar_exp == max(mean_solar_exp))
+
 
