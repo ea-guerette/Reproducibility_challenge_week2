@@ -31,4 +31,8 @@ mutate(daily_temp_diff = as.numeric(max_temp) - as.numeric(min_temp)) %>%
 
 #Q3 
 #Which state saw the lowest average daily temperature difference?
+#need to combine data sets to answer this Q
 
+
+#Q4
+#Does the westmost (lowest longitude) or eastmost (highest longitude) weather station in our dataset have a higher average solar exposure?
