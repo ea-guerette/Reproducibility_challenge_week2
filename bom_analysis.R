@@ -58,6 +58,11 @@ ans_Q3 <- group_by(joined_data, state) %>%
 # two lines of this code is reused from Q3 - this could be streamlined
 # save bom_data_w_temp_diff and use this instead of starting from bom_data_sep in both Q2 and Q3
 
+#alternate version of Q3 - average first, then subtract, to see if we get the same answer 
+group_by(joined_data, state) %>% 
+  filter(min_temp != "-", max_temp != "-", Rainfall != "-" ) %>% 
+  summarise(mean_max_temp = mean(as.numeric(max_temp, na.rm = T)), mean_min_temp = mean(as.numeric(min_temp,na.rm = T))) %>% 
+  mutate(daily_temp_diff = as.numeric(mean_max_temp) - as.numeric(mean_min_temp)) 
 
 #Q4
 #Does the westmost (lowest longitude) or eastmost (highest longitude) 
@@ -66,11 +71,23 @@ ans_Q3 <- group_by(joined_data, state) %>%
 #using joined_data again 
 #group by longitude
 #calculate mean solar exposure 
-#arrange #BUT IDEALLY I WOULD LIKE TO EXTRACT ONLY THE ANSWER
+
 tib_Q4 <- group_by(joined_data, lon) %>% 
   summarise(mean_solar_exp = mean(as.numeric(Solar_exposure), na.rm = T))  %>% 
   arrange(lon) %>% 
-  slice(-2:-(n()-1))
+  slice(-2:- (n()-1))
+
+#alternate solution to keep more info in table 
+group_by(joined_data, lon, Station_number) %>% 
+  summarise(mean_solar_exp = mean(as.numeric(Solar_exposure), na.rm = T))  %>% 
+  arrange(lon) %>% 
+  ungroup() %>% 
+  slice(-2:- (n()-1))
+
+#ANOTHER, BETTER WAY
+tib_Q4 <- group_by(joined_data, lon) %>% 
+  summarise(mean_solar_exp = mean(as.numeric(Solar_exposure), na.rm = T))  %>% 
+  filter(lon == max(as.numeric(lon)) | lon == min(as.numeric(lon)))
 
 ansQ4 <-filter(tib_Q4, mean_solar_exp == max(mean_solar_exp))
 
