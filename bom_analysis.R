@@ -87,8 +87,14 @@ group_by(joined_data, lon, Station_number) %>%
 #ANOTHER, BETTER WAY
 tib_Q4 <- group_by(joined_data, lon) %>% 
   summarise(mean_solar_exp = mean(as.numeric(Solar_exposure), na.rm = T))  %>% 
-  filter(lon == max(as.numeric(lon)) | lon == min(as.numeric(lon)))
+  filter(lon %in% range(as.numeric(lon)))
 
 ansQ4 <-filter(tib_Q4, mean_solar_exp == max(mean_solar_exp))
 
-
+# There is one other way to get the exact answer we want, but it relies on there being only
+# two rows in the data frame. Any more than that and it won't work, so it's not really a 
+# solution you'll come across often in a real data analysis
+ans_Q4_alt <- tib_Q4 %>% 
+  arrange(lon) %>% # Make sure the stations are ordered
+  # Then check if the difference of the two solar values is more or less than 0
+  summarise(easternmost_higher = diff(mean_solar_exp) > 0)
